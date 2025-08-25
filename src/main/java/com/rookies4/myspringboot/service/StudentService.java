@@ -28,7 +28,7 @@ public class StudentService {
                 //.map(student -> StudentDTO.Response.fromEntity(student))
                 .map(StudentDTO.Response::fromEntity)
                 .toList();
-                //.collect(Collectors.toList());
+        //.collect(Collectors.toList());
     }
 
     public StudentDTO.Response getStudentById(Long id) {
@@ -52,20 +52,20 @@ public class StudentService {
                     + request.getStudentNumber(),
                     HttpStatus.CONFLICT);
         }
-        
+
         // Validate email is not already in use (if provided)
-        if (request.getDetailRequest() != null && 
-            request.getDetailRequest().getEmail() != null && 
-            !request.getDetailRequest().getEmail().isEmpty() && 
-            studentDetailRepository.existsByEmail(request.getDetailRequest().getEmail())) {
+        if (request.getDetailRequest() != null &&
+                request.getDetailRequest().getEmail() != null &&
+                !request.getDetailRequest().getEmail().isEmpty() &&
+                studentDetailRepository.existsByEmail(request.getDetailRequest().getEmail())) {
             throw new BusinessException("Student detail already exists with email: "
                     + request.getDetailRequest().getEmail(),
                     HttpStatus.CONFLICT);
         }
 
         // Validate phone number is not already in use
-        if (request.getDetailRequest() != null && 
-            studentDetailRepository.existsByPhoneNumber(request.getDetailRequest().getPhoneNumber())) {
+        if (request.getDetailRequest() != null &&
+                studentDetailRepository.existsByPhoneNumber(request.getDetailRequest().getPhoneNumber())) {
             throw new BusinessException("Student detail already exists with phone number: "
                     + request.getDetailRequest().getPhoneNumber(),
                     HttpStatus.CONFLICT);
@@ -76,7 +76,7 @@ public class StudentService {
                 .name(request.getName())
                 .studentNumber(request.getStudentNumber())
                 .build();
-        
+
         // Create student detail if provided
         if (request.getDetailRequest() != null) {
             StudentDetail studentDetailEntity = StudentDetail.builder()
@@ -84,10 +84,10 @@ public class StudentService {
                     .phoneNumber(request.getDetailRequest().getPhoneNumber())
                     .email(request.getDetailRequest().getEmail())
                     .dateOfBirth(request.getDetailRequest().getDateOfBirth())
-                    //양방향 연관관계-StudentDetail에게 Student 객체의 레퍼런스 알려주기
+                    //양방향 연관관계 - StudentDetail에게 Student 객체의 레퍼런스 알려주기
                     .student(studentEntity)
                     .build();
-            //양방향 연관관계-StudentDetail에게 Student 객체의 레퍼런스 알려주기
+            //양방향 연관관계 - Student에게 StudentDetail 객체의 레퍼런스 알려주기
             studentEntity.setStudentDetail(studentDetailEntity);
         }
 
@@ -104,7 +104,7 @@ public class StudentService {
                         + id, HttpStatus.NOT_FOUND));
 
         // Check if another student already has the student number
-        if (!student.getStudentNumber().equals(request.getStudentNumber()) && 
+        if (!student.getStudentNumber().equals(request.getStudentNumber()) &&
                 studentRepository.existsByStudentNumber(request.getStudentNumber())) {
             throw new BusinessException("Student already exists with student number: "
                     + request.getStudentNumber(),
@@ -114,11 +114,11 @@ public class StudentService {
         // Update student basic info
         student.setName(request.getName());
         student.setStudentNumber(request.getStudentNumber());
-        
+
         // Update student detail if provided
         if (request.getDetailRequest() != null) {
             StudentDetail studentDetail = student.getStudentDetail();
-            
+
             // Create new detail if not exists
             if (studentDetail == null) {
                 studentDetail = new StudentDetail();
@@ -126,25 +126,25 @@ public class StudentService {
                 studentDetail.setStudent(student);
                 student.setStudentDetail(studentDetail);
             }
-            
+
             // Validate email is not already in use (if changing)
-            if (request.getDetailRequest().getEmail() != null && 
-                !request.getDetailRequest().getEmail().isEmpty() &&
-                (studentDetail.getEmail() == null || !studentDetail.getEmail().equals(request.getDetailRequest().getEmail())) &&
-                studentDetailRepository.existsByEmail(request.getDetailRequest().getEmail())) {
+            if (request.getDetailRequest().getEmail() != null &&
+                    !request.getDetailRequest().getEmail().isEmpty() &&
+                    (studentDetail.getEmail() == null || !studentDetail.getEmail().equals(request.getDetailRequest().getEmail())) &&
+                    studentDetailRepository.existsByEmail(request.getDetailRequest().getEmail())) {
                 throw new BusinessException("Student detail already exists with email: "
                         + request.getDetailRequest().getEmail(),
                         HttpStatus.CONFLICT);
             }
-            
+
             // Validate phone number is not already in use (if changing)
             if ((studentDetail.getPhoneNumber() == null || !studentDetail.getPhoneNumber().equals(request.getDetailRequest().getPhoneNumber())) &&
-                studentDetailRepository.existsByPhoneNumber(request.getDetailRequest().getPhoneNumber())) {
+                    studentDetailRepository.existsByPhoneNumber(request.getDetailRequest().getPhoneNumber())) {
                 throw new BusinessException("Student detail already exists with phone number: "
                         + request.getDetailRequest().getPhoneNumber(),
                         HttpStatus.CONFLICT);
             }
-            
+
             // Update detail fields
             studentDetail.setAddress(request.getDetailRequest().getAddress());
             studentDetail.setPhoneNumber(request.getDetailRequest().getPhoneNumber());
