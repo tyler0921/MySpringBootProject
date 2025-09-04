@@ -37,13 +37,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // 특정학과에 속한 학생의 ID로 조회 (페이징)
     Page<Student> findByDepartmentId(Long departmentId, Pageable pageable);
 
-    // 학생 이름으로 검색 (페이징)
+    // 학생 이름으로 검색 (페이징) '% name %'
     Page<Student> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     // 학생 번호로 검색 (페이징)
     Page<Student> findByStudentNumberContainingIgnoreCase(String studentNumber, Pageable pageable);
 
-    // 부서별 + 이름 검색 (페이징)
+    // 특정학과에 속한 학생의 이름 검색 (페이징)
     Page<Student> findByDepartmentIdAndNameContainingIgnoreCase(Long departmentId,
                                                                 String name, Pageable pageable);
 }
